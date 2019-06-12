@@ -1,0 +1,51 @@
+version: '3.4'
+volumes:
+  dbpgsql:
+  drupal:
+services:
+  pgsql:
+    image: postgres:9.6
+    environment:
+      - POSTGRES_DB = homolog
+      - POSTGRES_PASSWORD=q1w2e3r4t5
+      - POSTGRES_USER=homolog
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - dbpgsql:/var/lib/postgresql/data
+  drupal:
+    image: drupal
+    volumes: 
+      - drupal:/var/www/html
+    ports:
+      - 81:80
+  # psql-backup:
+  #   image: atilaloise/psql-backup
+  #   environment:
+  #     - PGHOST=pgsql
+  #     - PGUSER=homolog
+  #     - PGPASSWORD=q1w2e3r4t5
+  #     - PGPORT=5432      
+  #     - PGDATABASE=homolog
+  #     - DB_DUMP_TARGET=s3://dumps/pgsqlhomolog
+  #     - AWS_ACCESS_KEY_ID=test
+  #     - AWS_SECRET_ACCESS_KEY=aeuhoaeuhaeouhaeouP455W0rd
+  #     - AWS_ENDPOINT_URL=https://minio.lab.local
+  #     - COMPRESSION=bzip2
+  #   volumes:
+  #     - /etc/localtime:/etc/localtime:ro
+  psql-restore:
+    image: atilaloise/psql-backup
+    environment:
+      - PGHOST=pgsql
+      - PGUSER=homolog
+      - PGPASSWORD=q1w2e3r4t5
+      - PGPORT=5432      
+      - PGDATABASE=homolog
+      - COMPRESSION=bzip2
+      - DB_DUMP_DEBUG=true
+      - DB_RESTORE_TARGET=s3://dumps/pgsqlhomolog/db_backup_20190603120545.tbz2
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=aeuhoaeuhaeouhaeouP455W0rd
+      - AWS_ENDPOINT_URL=https://minio.lab.local
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
