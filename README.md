@@ -1,6 +1,7 @@
 # backup-pgsql:9.6.10
 Back up PostgeSQL 9.6 to anywhere
 
+docker pull atilaloise/pgsql-backup
 
 ## Overview
 Use a container to back up Postgres 9.6 in a practical way
